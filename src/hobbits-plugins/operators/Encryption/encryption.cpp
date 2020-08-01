@@ -1,6 +1,12 @@
 #include "encryption.h"
 #include "ui_encryption.h"
 
+#include <QMessageBox>
+#include <QToolTip>
+#include <QObject>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+#include <QTime>
 
 Encryption::Encryption() :
     ui(new Ui::Encryption())
@@ -91,34 +97,58 @@ QSharedPointer<const OperatorResult> Encryption::operateOnContainers(
 
     //Perform bit operations here
     if(!canRecallPluginState(recallablePluginState)){
-        return nullResult;
+        return OperatorResult::error("Please fill in the reuired in the proper format.");
     }
     QString keyString = recallablePluginState.value("key").toString();
     //keyString length needs to be less than or equal to 128 becuase the plugin crashes otherwise
     //Generate a key for the user if the user didn't enter one
-    if(keyString.isEmpty()){
-        keyString = "11010010";
+    QByteArray key_byte;
+    QSharedPointer<BitArray> key;
+    if(keyString.isEmpty() && ui->rb_encrypt->isChecked()){
+        key = QSharedPointer<BitArray>(new BitArray(8));
+        for(int i = 0; i < key->sizeInBits(); i++){
+            qsrand(QTime::currentTime().msec());
+            qint8 randNum = rand() % 2 + 0;
+            key->set(i, randNum);
+            keyString += QString().setNum(randNum);
+        }
         ui->le_key->setText(keyString);
+     }else if(keyString.isEmpty() && ui->rb_decrypt->isChecked()){
+        return OperatorResult::error("Enter a key to decrypt your data");
+     }else if(ui->rb_hex->isChecked()){
+        key_byte = QByteArray::fromHex(keyString.toLatin1());
+        key = QSharedPointer<BitArray>(new BitArray(key_byte, key_byte.size()*8));
+     }else if(ui->rb_ascii->isChecked()){
+        key_byte = QByteArray(keyString.toLatin1());
+        key = QSharedPointer<BitArray>(new BitArray(key_byte, key_byte.size()*8));
+     }else if(ui->rb_binary->isChecked()){
+        key = QSharedPointer<BitArray>(new BitArray(keyString.length()));
+        for(int i = 0; i < keyString.length(); i++){
+            if(keyString.at(i) == '0'){
+                key->set(i, 0);
+            }else if(keyString.at(i) == '1'){
+                key->set(i, 1);
+            }else{
+                return OperatorResult::error("Invalid input. Please Double check the input fields.");
+            }
+         }
      }else if(keyString.length() > 128 || keyString.length() > inputBits->sizeInBits()){
-        return nullResult;
+        return OperatorResult::error("The key is too long. Key length should be less than or equal to 128 characters.");
+    }else if(!(ui->rb_binary->isChecked() || ui->rb_ascii->isChecked() || ui->rb_hex->isChecked())){
+        return OperatorResult::error("Please select what format your key is in (Hex/ASCII/Binary)");
+    }else if(!(ui->rb_encrypt->isChecked() || ui->rb_decrypt->isChecked())){
+        return OperatorResult::error("Please select whether you want to encrypt or decrypt the data");
     }
     //make output bits pointer to bitarray
     QSharedPointer<BitArray> outputBits = QSharedPointer<BitArray>(new BitArray(inputBits->sizeInBits()));
     //Declare variables for calculations
-    qint8 keyVal;
+    //qint8 keyVal;
     qint64 bitsProcessed = 0;
     int lastPercent = 0;
     //do the doodoo
     for(int i = 0; i < inputBits->sizeInBits(); i++){
-        qint8 indexKey = i % keyString.length();
-        if(keyString.at(indexKey) == '0'){
-           keyVal = 0;
-        }else if(keyString.at(indexKey) == '1'){
-           keyVal = 1;
-        }else{
-            return nullResult;
-        }
-        qint8 xorVal = keyVal ^ inputBits->at(i);
+        qint8 indexKey = i % key->sizeInBits();
+        qint8 xorVal = key->at(indexKey) ^ inputBits->at(i);
         outputBits->set(i, xorVal);
         bitsProcessed = i;
         if (bitsProcessed > 0) {
