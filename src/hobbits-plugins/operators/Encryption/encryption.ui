@@ -87,6 +87,45 @@
         </item>
        </layout>
       </widget>
+      <widget class="QPushButton" name="pb_genKeys">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>30</y>
+         <width>101</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Generate Keys</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pb_pubKey">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>30</y>
+         <width>111</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Select Public Key</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pb_privKey">
+       <property name="geometry">
+        <rect>
+         <x>230</x>
+         <y>30</y>
+         <width>111</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Select Private Key</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="XOR">
       <widget class="QWidget" name="horizontalLayoutWidget_3">

@@ -37,6 +37,8 @@ public:
             const QJsonObject &recallablePluginState,
             QSharedPointer<ActionProgress> progressTracker) override;
     void previewBits(QSharedPointer<BitContainerPreview> container) override;
+    QString pub_key_file;
+    QString priv_key_file;
 
 signals:
    //void rsaChanged();
@@ -48,6 +50,9 @@ private slots:
     void requestRun();
     void checkXorUi(bool checked);
     void checkRsaUi(bool checked);
+    void generateKeys();
+    void selectPrivKey();
+    void selectPubKey();
 
 private:
     QStackedWidget *UIs;
