@@ -184,9 +184,7 @@ QSharedPointer<const OperatorResult> Encryption::operateOnContainers(
     //return OperatorResult::result({outputContainer}, recallablePluginState);
     }else if(ui->rb_RSA->isChecked()){
         char *data = new char[inputBits->sizeInBytes() + 1];
-        qint32 bytes = inputBits->readBytes(data, 0, inputBits->sizeInBytes());
-        //QByteArray input2;
-        //input2.append((const char*)&bytes, sizeof(bytes));
+        qint32 bytes = inputBits->readBytes(data, 0, inputBits->sizeInBytes());;
         QByteArray input = QByteArray(data, bytes);
         Cipher cwrapper;
 
@@ -203,17 +201,59 @@ QSharedPointer<const OperatorResult> Encryption::operateOnContainers(
         RSA* publickey = cwrapper.getPublicKey("public.pem");
         RSA* privatekey = cwrapper.getPrivateKey("private.pem");
 
+        QByteArray encrypted = "";
+        QByteArray decrypted = "";
 
         QSharedPointer<BitContainer> outputContainer = QSharedPointer<BitContainer>(new BitContainer());
-        //QByteArray encrypted = cwrapper.encryptRSA(publickey, input);
-        //QByteArray decrypted = cwrapper.decryptRSA(privatekey, encrypted);
+
+        QByteArrayList encrypt_blocks;
 
         if(ui->rb_encrypt->isChecked()){
-           QByteArray encrypted = cwrapper.encryptRSA(publickey, input);
+            int parts = (input.size()/214);
+            int rem = (input.size() % 214);
+
+            int n = 0;
+
+            for(int i = 0; i <= parts; i++){
+                if(i < parts){
+                    QByteArray temp = input.mid(n, 214);
+                    QByteArray block = cwrapper.encryptRSA(publickey, temp);
+                    encrypt_blocks.append(block);
+                    //QByteArray d_block = cwrapper.decryptRSA(privatekey, block);
+                    encrypted += block;
+                    //decrypted += d_block;
+                    n += 214;
+                }else {
+                    QByteArray temp = input.mid(n, rem);
+                    QByteArray block = cwrapper.encryptRSA(publickey, temp);
+                    encrypt_blocks.append(block);
+                    encrypted += block;
+                    //decrypted += d_block;
+                }
+            }
+
+           //QByteArray encrypted = cwrapper.encryptRSA(publickey, input);
            outputContainer->setBits(QSharedPointer<BitArray>(new BitArray(encrypted, encrypted.size()*8)));
 
         }else if(ui->rb_decrypt->isChecked()){
-           QByteArray decrypted = cwrapper.decryptRSA(privatekey, input);
+            int parts = (input.size()/256);
+            int rem = (input.size() % 256);
+
+            int n = 0;
+
+            for(int i = 0; i <= parts; i++){
+                if(i < parts){
+                    QByteArray temp = input.mid(n, 256);
+                    QByteArray d_block = cwrapper.decryptRSA(privatekey, temp);
+                    decrypted += d_block;
+                    n += 256;
+                }else {
+                    QByteArray temp = input.mid(n, rem);
+                    QByteArray d_block = cwrapper.decryptRSA(privatekey, temp);
+                    decrypted += d_block;
+                }
+            }
+           //QByteArray decrypted = cwrapper.decryptRSA(privatekey, input);
            outputContainer->setBits(QSharedPointer<BitArray>(new BitArray(decrypted, decrypted.size()*8)));
         }
 
