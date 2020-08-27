@@ -2,6 +2,7 @@
 #define ENCRYPTION_H
 
 #include "operatorinterface.h"
+#include <QStackedWidget>
 
 namespace Ui
 {
@@ -36,11 +37,23 @@ public:
             const QJsonObject &recallablePluginState,
             QSharedPointer<ActionProgress> progressTracker) override;
     void previewBits(QSharedPointer<BitContainerPreview> container) override;
+
+signals:
+   //void rsaChanged();
+   //void xorChanged();
+
 private slots:
+    //void switchPage(int num);'
+    //void setCurrentIndex(int num);
     void requestRun();
+    void checkXorUi(bool checked);
+    void checkRsaUi(bool checked);
+
 private:
+    QStackedWidget *UIs;
     Ui::Encryption *ui;
     QSharedPointer<PluginCallback> m_pluginCallback;
 };
+
 
 #endif // ENCRYPTION_H

@@ -27,9 +27,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-SOURCES +=         encryption.cpp
+SOURCES +=         encryption.cpp \
+    cipher.cpp
 
-HEADERS +=         encryption.h
+HEADERS +=         encryption.h \
+    cipher.h
 
 FORMS +=        encryption.ui
 
@@ -37,11 +39,15 @@ DISTFILES +=
 
 RESOURCES += 
 
+INCLUDEPATH += $$PWD/../../../hobbits-core
+DEPENDPATH += $$PWD/../../../hobbits-core
 
 LIBS += -L$$OUT_PWD/../../../hobbits-core/ -lhobbits-core
 
-INCLUDEPATH += $$PWD/../../../hobbits-core
-DEPENDPATH += $$PWD/../../../hobbits-core
+INCLUDEPATH += ../../../../Nabeela/Sources/openssl-3.0.0-alpha6/include
+
+LIBS += -L../../../../Nabeela/Sources/openssl-3.0.0-alpha6/libcrypto.a -lcrypto
+LIBS += -L../../../../Nabeela/Sources/openssl-3.0.0-alpha6/libssl.a -lssl
 
 unix:!mac {
     QMAKE_LFLAGS_RPATH=
@@ -57,3 +63,4 @@ unix {
     target.path = target.path = $$(HOME)/.local/share/hobbits/plugins/operators
     INSTALLS += target
 }
+

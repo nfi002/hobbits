@@ -7,116 +7,201 @@
     <x>0</x>
     <y>0</y>
     <width>604</width>
-    <height>338</height>
+    <height>451</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <layout class="QFormLayout" name="formLayout">
-     <item row="0" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayout"/>
-     </item>
-     <item row="1" column="1">
-      <widget class="QGroupBox" name="gb_edchoice">
-       <property name="title">
-        <string/>
+   <item row="0" column="1">
+    <layout class="QHBoxLayout" name="method">
+     <item>
+      <widget class="QRadioButton" name="rb_RSA">
+       <property name="text">
+        <string>RSA</string>
        </property>
-       <widget class="QRadioButton" name="rb_encrypt">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>69</width>
-          <height>23</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Encrypt</string>
-        </property>
-       </widget>
-       <widget class="QRadioButton" name="rb_decrypt">
-        <property name="geometry">
-         <rect>
-          <x>70</x>
-          <y>0</y>
-          <width>71</width>
-          <height>23</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Decrypt</string>
-        </property>
-       </widget>
       </widget>
      </item>
-     <item row="3" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayout_12">
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Key:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="le_key">
-         <property name="placeholderText">
-          <string>e.g. (Apple, 0111, F08A)</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="2" column="1">
-      <widget class="QGroupBox" name="groupBox">
-       <property name="title">
-        <string/>
+     <item>
+      <widget class="QRadioButton" name="rb_xor">
+       <property name="text">
+        <string>XOR Obfuscation</string>
        </property>
-       <widget class="QRadioButton" name="rb_ascii">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>55</width>
-          <height>23</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>ASCII</string>
-        </property>
-       </widget>
-       <widget class="QRadioButton" name="rb_binary">
-        <property name="geometry">
-         <rect>
-          <x>60</x>
-          <y>0</y>
-          <width>63</width>
-          <height>23</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Binary</string>
-        </property>
-       </widget>
-       <widget class="QRadioButton" name="rb_hex">
-        <property name="geometry">
-         <rect>
-          <x>130</x>
-          <y>0</y>
-          <width>48</width>
-          <height>23</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Hex</string>
-        </property>
-       </widget>
       </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
+   </item>
+   <item row="6" column="1">
+    <widget class="QStackedWidget" name="UIs">
+     <widget class="QWidget" name="RSA">
+      <widget class="QWidget" name="horizontalLayoutWidget_2">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>586</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="Ed">
+        <item>
+         <widget class="QRadioButton" name="rb_decrypt">
+          <property name="text">
+           <string>Decrypt</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_encrypt">
+          <property name="text">
+           <string>Encrypt</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="XOR">
+      <widget class="QWidget" name="horizontalLayoutWidget_3">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>581</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="Ed_2">
+        <item>
+         <widget class="QRadioButton" name="radioButton_2">
+          <property name="text">
+           <string>Encrypt</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButton">
+          <property name="text">
+           <string>Decrypt</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="horizontalLayoutWidget_4">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>40</y>
+         <width>581</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="abh">
+        <item>
+         <widget class="QRadioButton" name="rb_ascii">
+          <property name="text">
+           <string>ASCII</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_binary">
+          <property name="text">
+           <string>Binary</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_hex">
+          <property name="text">
+           <string>Hex</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_6">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="horizontalLayoutWidget_5">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>80</y>
+         <width>581</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="key">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Key:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="le_key">
+          <property name="placeholderText">
+           <string>e.g. (Apple, 0111, F08A)</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </widget>
    </item>
   </layout>
  </widget>
