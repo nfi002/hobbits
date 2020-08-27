@@ -1,15 +1,15 @@
 #include "encryption.h"
 #include "ui_encryption.h"
+#include "settingsmanager.h"
 #include <cipher.h>
 #include <QDebug>
 #include <QMessageBox>
 #include <QToolTip>
 #include <QObject>
-#include <QRegularExpression>
-#include <QRegularExpressionMatch>
 #include <QTime>
 #include <QProcess>
 #include <QFileInfo>
+#include <QFileDialog>
 
 Encryption::Encryption() :
     ui(new Ui::Encryption())
@@ -182,31 +182,20 @@ QSharedPointer<const OperatorResult> Encryption::operateOnContainers(
         return result;
     //return OperatorResult::error("Plugin operation is not plainimplemented!");
     //return OperatorResult::result({outputContainer}, recallablePluginState);
+
     }else if(ui->rb_RSA->isChecked()){
         char *data = new char[inputBits->sizeInBytes() + 1];
         qint32 bytes = inputBits->readBytes(data, 0, inputBits->sizeInBytes());;
         QByteArray input = QByteArray(data, bytes);
         Cipher cwrapper;
 
-        QFileInfo check_file("private.pem");
-        QFileInfo check_file_two("public.pem");
-
-       if(!(check_file.exists() && check_file.isFile())){
-            QProcess::execute("openssl genrsa -out private.pem 2048");
-        }
-        if(!(check_file_two.exists() && check_file_two.isFile())){
-            QProcess::execute("openssl rsa -in private.pem -out public.pem -outform PEM -pubout");
-        }
-
-        RSA* publickey = cwrapper.getPublicKey("public.pem");
-        RSA* privatekey = cwrapper.getPrivateKey("private.pem");
+        RSA* publickey = cwrapper.getPublicKey(this->pub_key_file);
+        RSA* privatekey = cwrapper.getPrivateKey(this->priv_key_file);
 
         QByteArray encrypted = "";
         QByteArray decrypted = "";
 
         QSharedPointer<BitContainer> outputContainer = QSharedPointer<BitContainer>(new BitContainer());
-
-        QByteArrayList encrypt_blocks;
 
         if(ui->rb_encrypt->isChecked()){
             int parts = (input.size()/214);
@@ -218,21 +207,15 @@ QSharedPointer<const OperatorResult> Encryption::operateOnContainers(
                 if(i < parts){
                     QByteArray temp = input.mid(n, 214);
                     QByteArray block = cwrapper.encryptRSA(publickey, temp);
-                    encrypt_blocks.append(block);
-                    //QByteArray d_block = cwrapper.decryptRSA(privatekey, block);
                     encrypted += block;
-                    //decrypted += d_block;
                     n += 214;
                 }else {
                     QByteArray temp = input.mid(n, rem);
                     QByteArray block = cwrapper.encryptRSA(publickey, temp);
-                    encrypt_blocks.append(block);
                     encrypted += block;
                     //decrypted += d_block;
                 }
             }
-
-           //QByteArray encrypted = cwrapper.encryptRSA(publickey, input);
            outputContainer->setBits(QSharedPointer<BitArray>(new BitArray(encrypted, encrypted.size()*8)));
 
         }else if(ui->rb_decrypt->isChecked()){
@@ -253,12 +236,11 @@ QSharedPointer<const OperatorResult> Encryption::operateOnContainers(
                     decrypted += d_block;
                 }
             }
-           //QByteArray decrypted = cwrapper.decryptRSA(privatekey, input);
            outputContainer->setBits(QSharedPointer<BitArray>(new BitArray(decrypted, decrypted.size()*8)));
         }
 
-        //cwrapper.freeRSAKey(publickey);
-        //cwrapper.freeRSAKey(privatekey);
+        cwrapper.freeRSAKey(publickey);
+        cwrapper.freeRSAKey(privatekey);
 
         result->setOutputContainers({outputContainer});
         result->setPluginState({recallablePluginState});
@@ -287,10 +269,13 @@ void Encryption::requestRun()
 void Encryption::applyToWidget(QWidget *widget)
 {
     ui->setupUi(widget);
-    //connect(ui->btnInfo, SIGNAL(clicked()), this, SLOT(showHelp()));
     connect(ui->le_key, SIGNAL(returnPressed()), this, SLOT(requestRun()));
     connect(ui->rb_xor, SIGNAL(toggled(bool)), this, SLOT(checkXorUi(bool)));
     connect(ui->rb_RSA, SIGNAL(toggled(bool)), this, SLOT(checkRsaUi(bool)));
+    connect(ui->pb_genKeys, SIGNAL(clicked()), this, SLOT(generateKeys()));
+    connect(ui->pb_privKey, SIGNAL(clicked()), this, SLOT(selectPrivKey()));
+    connect(ui->pb_pubKey, SIGNAL(clicked()), this, SLOT(selectPubKey()));
+
 }
 
 void Encryption::checkRsaUi(bool checked)
@@ -307,4 +292,32 @@ void Encryption::checkXorUi(bool checked)
     if(currentIndex < ui->UIs->count()){
          ui->UIs->setCurrentIndex(1); // page1
     }
+}
+
+void Encryption::generateKeys()
+{
+    QProcess::execute("openssl genrsa -out private.pem 2048");
+    QProcess::execute("openssl rsa -in private.pem -out public.pem -outform PEM -pubout");
+}
+
+void Encryption:: selectPrivKey()
+{
+    QString fileName;
+    fileName = QFileDialog::getOpenFileName(
+            nullptr,
+            tr("Import Bits"),
+            SettingsManager::getInstance().getPrivateSetting(SettingsData::LAST_IMPORT_EXPORT_PATH_KEY).toString(),
+            tr("All Files (*)"));
+    this->priv_key_file = fileName;
+}
+
+void Encryption::selectPubKey()
+{
+    QString fileName;
+    fileName = QFileDialog::getOpenFileName(
+            nullptr,
+            tr("Import Bits"),
+            SettingsManager::getInstance().getPrivateSetting(SettingsData::LAST_IMPORT_EXPORT_PATH_KEY).toString(),
+            tr("All Files (*)"));
+    this->pub_key_file = fileName;
 }
