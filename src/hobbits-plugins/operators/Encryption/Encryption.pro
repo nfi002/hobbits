@@ -39,6 +39,9 @@ DISTFILES +=
 
 RESOURCES += 
 
+LD_LIBRARY_PATH += "usr/local/lib64/libcrypto.so"
+LD_LIBRARY_PATH += "usr/local/lib64/libssl.so"
+
 INCLUDEPATH += $$PWD/../../../hobbits-core
 DEPENDPATH += $$PWD/../../../hobbits-core
 

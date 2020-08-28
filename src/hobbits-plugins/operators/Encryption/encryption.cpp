@@ -189,8 +189,11 @@ QSharedPointer<const OperatorResult> Encryption::operateOnContainers(
         QByteArray input = QByteArray(data, bytes);
         Cipher cwrapper;
 
-        RSA* publickey = cwrapper.getPublicKey(this->pub_key_file);
-        RSA* privatekey = cwrapper.getPrivateKey(this->priv_key_file);
+        QString pub = pub_key_file;
+        QString priv = priv_key_file;
+
+        RSA* publickey = cwrapper.getPublicKey(pub_key_file);
+        RSA* privatekey = cwrapper.getPrivateKey(priv_key_file);
 
         QByteArray encrypted = "";
         QByteArray decrypted = "";
@@ -296,8 +299,24 @@ void Encryption::checkXorUi(bool checked)
 
 void Encryption::generateKeys()
 {
-    QProcess::execute("openssl genrsa -out private.pem 2048");
-    QProcess::execute("openssl rsa -in private.pem -out public.pem -outform PEM -pubout");
+    OpenSSL_add_all_algorithms();
+    OpenSSL_add_all_ciphers();
+    ERR_load_crypto_strings();
+
+    EVP_PKEY *x = EVP_PKEY_new();
+
+    RSA *rsa = RSA_generate_key(2048, 3, NULL, NULL);
+
+    EVP_PKEY_assign_RSA(x, rsa);
+
+    FILE *pkey_file = fopen("private.pem", "w");
+    PEM_write_RSAPrivateKey(pkey_file, rsa, NULL, NULL, 0, NULL, NULL);
+
+    FILE *pubkey_file = fopen("public.pem", "w");
+    PEM_write_PUBKEY(pubkey_file, x);
+
+    fclose(pkey_file);
+    fclose(pubkey_file);
 }
 
 void Encryption:: selectPrivKey()
