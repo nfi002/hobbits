@@ -35,22 +35,50 @@ HEADERS +=         encryption.h \
 
 FORMS +=        encryption.ui
 
-DISTFILES +=     
+DISTFILES +=
+
+win32-msvc* {
+    exists($$OUT_PWD/../../../../windows/libssl.lib && $$OUT_PWD/../../../../windows/libcrypto.lib) {
+        LIBS += -L$$OUT_PWD/../../../../windows -llibssl
+        LIBS += -L$$OUT_PWD/../../../../windows -llibcrypto
+        INCLUDEPATH += $$OUT_PWD/../../../../windows
+        DEPENDPATH += $$OUT_PWD/../../../../windows
+    }
+    else {
+        warning("The SSL .lib file and/or CRYPTO .lib file could not be found, so Encryption will not build"))
+    }
+}
+win32-g++ {
+    LIBS += -L$$OUT_PWD/../../../../windows -lssl
+    LIBS += -L$$OUT_PWD/../../../../windows -lcrypto
+    INCLUDEPATH += $$OUT_PWD/../../../../windows
+    DEPENDPATH += $$OUT_PWD/../../../../windows
+}
+unix {
+    packagesExist(ssl && crypto) {
+        mac {
+            INCLUDEPATH += /usr/local/include
+            LIBS += -L/usr/local/lib
+        }
+        LIBS += -lcrypto
+        LIBS += -lssl
+    }
+    else {
+        warning("The SSL and CRYPTO packages could not be found, so Encryption will not build")
+    }
+}
 
 RESOURCES += 
-
-LD_LIBRARY_PATH += "usr/local/lib64/libcrypto.so"
-LD_LIBRARY_PATH += "usr/local/lib64/libssl.so"
 
 INCLUDEPATH += $$PWD/../../../hobbits-core
 DEPENDPATH += $$PWD/../../../hobbits-core
 
 LIBS += -L$$OUT_PWD/../../../hobbits-core/ -lhobbits-core
 
-INCLUDEPATH += ../../../../Nabeela/Sources/openssl-3.0.0-alpha6/include
+#INCLUDEPATH += ../../../../Nabeela/Sources/openssl-3.0.0-alpha6/include
 
-LIBS += -L../../../../Nabeela/Sources/openssl-3.0.0-alpha6/libcrypto.a -lcrypto
-LIBS += -L../../../../Nabeela/Sources/openssl-3.0.0-alpha6/libssl.a -lssl
+#LIBS += -L../../../../Nabeela/Sources/openssl-3.0.0-alpha6/libcrypto.a -lcrypto
+#LIBS += -L../../../../Nabeela/Sources/openssl-3.0.0-alpha6/libssl.a -lssl
 
 unix:!mac {
     QMAKE_LFLAGS_RPATH=
