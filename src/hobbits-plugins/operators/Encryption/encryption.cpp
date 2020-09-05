@@ -309,11 +309,12 @@ void Encryption::generateKeys()
 
     EVP_PKEY_assign_RSA(x, rsa);
 
-    FILE *pkey_file = fopen("private.pem", "w");
+    FILE *pkey_file = fopen("private2.pem", "w");
     PEM_write_RSAPrivateKey(pkey_file, rsa, NULL, NULL, 0, NULL, NULL);
 
-    FILE *pubkey_file = fopen("public.pem", "w");
+    FILE *pubkey_file = fopen("public2.pem", "w");
     PEM_write_PUBKEY(pubkey_file, x);
+    //PEM_write_RSAPublicKey(pubkey_file, rsa);
 
     fclose(pkey_file);
     fclose(pubkey_file);

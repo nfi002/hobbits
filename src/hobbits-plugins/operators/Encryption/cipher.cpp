@@ -26,9 +26,6 @@ RSA *Cipher::getPublicKey(QByteArray &data)
     BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
 
     RSA* rsaPubKey = PEM_read_bio_RSA_PUBKEY(bio, NULL, NULL, NULL);
-    if(!rsaPubKey){
-        qCritical() << "Could not load public key" << ERR_error_string(ERR_get_error(), NULL);
-    }
     BIO_free(bio);
     return rsaPubKey;
 }
@@ -46,9 +43,6 @@ RSA *Cipher::getPrivateKey(QByteArray &data)
     BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
 
     RSA* rsaPrivKey = PEM_read_bio_RSAPrivateKey(bio, NULL, NULL, NULL);
-    if(!rsaPrivKey){
-        qCritical() << "Could not load private key" << ERR_error_string(ERR_get_error(), NULL);
-    }
     BIO_free(bio);
     return rsaPrivKey;
 }
